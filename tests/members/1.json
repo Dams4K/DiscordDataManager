@@ -1,0 +1,22 @@
+{
+    "__type": [
+        "Saveable"
+    ],
+    "level": 0,
+    "xp": 100,
+    "inventory": {
+        "__type": [
+            "Data"
+        ],
+        "items": [
+            {
+                "__type": [
+                    "Data"
+                ],
+                "name": "Apple",
+                "description": "no description",
+                "price": 0
+            }
+        ]
+    }
+}
