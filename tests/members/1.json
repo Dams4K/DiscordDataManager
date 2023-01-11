@@ -1,21 +1,15 @@
 {
-    "__type": [
-        "Saveable"
-    ],
+    "__type": "MemberData",
     "level": 0,
-    "xp": 100,
+    "xp": 1566,
     "inventory": {
-        "__type": [
-            "Data"
-        ],
+        "__type": "Inventory",
         "items": [
             {
-                "__type": [
-                    "Data"
-                ],
-                "name": "Apple",
+                "__type": "Item",
+                "name": "Appleeeee",
                 "description": "no description",
-                "price": 0
+                "price": 15
             }
         ]
     }
