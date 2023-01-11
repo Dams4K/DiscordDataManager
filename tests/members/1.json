@@ -1,15 +1,21 @@
 {
     "__type": "MemberData",
     "level": 0,
-    "xp": 1566,
+    "xp": 0,
     "inventory": {
         "__type": "Inventory",
         "items": [
             {
                 "__type": "Item",
-                "name": "Appleeeee",
+                "name": "Apple",
                 "description": "no description",
-                "price": 15
+                "price": 0
+            },
+            {
+                "__type": "Item",
+                "name": "Book",
+                "description": "A wonderful book",
+                "price": 0
             }
         ]
     }

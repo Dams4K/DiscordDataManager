@@ -1,15 +1,10 @@
 import os
 import json
-import imaplib
 
 class Data:
-    def __init__(self):
-        self.to_save = []
-    
-
     def export_data(self):
         data = {"__type": self.__class__.__name__}
-        for attr_name in self.to_save:
+        for attr_name in self.get_saveable_attrs():
             attr = getattr(self, attr_name)
             if isinstance(attr, Data):
                 attr = attr.export_data()
@@ -42,7 +37,7 @@ class Data:
             elif isinstance(attr_data, list):
                 for element_data in attr_data:
                     if isinstance(element_data, dict) and element_data.get("__type", None):
-                        element_clazz = getattr(clazz, attr_name + "_element_type")()
+                        element_clazz = getattr(clazz, f"_{attr_name}_element_type")()
                         Data.import_data(element_data, element_clazz)
                         
                         class_attr.append(element_clazz)
@@ -51,29 +46,32 @@ class Data:
                 setattr(clazz, attr_name, attr_data)
         
     def __repr__(self):
-        attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.to_save]
+        attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.get_saveable_attrs()]
         inner = ' '.join("%s=%r" % t for t in attrs)
         return f'<{self.__class__.__name__} {inner}>'
+    
+    def get_saveable_attrs(self):
+        return [attr for attr in self.__dict__ if not attr.startswith("_")]
 
 
 class Saveable(Data):
     def __init__(self, path):
         super().__init__()
-        self.path = path
+        self._path = path
 
     def save(self):
         self.create_needed_dirs()
-        with open(self.path, "w") as f:
+        with open(self._path, "w") as f:
             json.dump(self.export_data(), f, indent=4)
 
     def load(self):
         self.create_needed_dirs()
-        if os.path.exists(self.path):
-            with open(self.path, "r") as f:
+        if os.path.exists(self._path):
+            with open(self._path, "r") as f:
                 Data.import_data(json.load(f), self)
 
     
     def create_needed_dirs(self):
-        dirname = os.path.dirname(self.path)
+        dirname = os.path.dirname(self._path)
         if not os.path.exists(dirname):
             os.makedirs(dirname)

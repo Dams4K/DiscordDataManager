@@ -7,20 +7,12 @@ class Item(Data):
         self.description = description
         self.price = price
 
-        self.to_save = [
-            "name",
-            "description",
-            "price"
-        ]
 
 class Inventory(Data):
     def __init__(self):
         super().__init__()
         self.items = []
-        self.items_element_type = Item
-        self.to_save = [
-            "items"
-        ]
+        self._items_element_type = Item
     
     def add_item(self, item: Item):
         self.items.append(item)
@@ -32,25 +24,10 @@ class MemberData(Saveable):
         self.level = 0
         self.xp = 0
         self.inventory = Inventory()
-
-        self.to_save = [
-            "level",
-            "xp",
-            "inventory"
-        ]
     
 
 member_data = MemberData(1)
-apple = Item("Apple")
+member_data.load()
+apple = Item("Book", description="A wonderful book")
 member_data.inventory.add_item(apple)
-# print(member_data.inventory.items)
-# member_data.xp += 100
-# # print(member_data.export_data())
-# member_data.save()
-
-
-# del member_data
-
-member_data_loaded = MemberData(1)
-member_data_loaded.load()
-print(member_data_loaded)
+member_data.save()
