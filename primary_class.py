@@ -44,27 +44,6 @@ class Data:
             
             else:
                 setattr(clazz, attr_name, attr_data)
-    
-    def double_decorator(f):
-        def decorator(*args, **kwargs):
-            if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
-                # called @decorator
-                return f(args[0])
-            else:
-                # called @decorator(...)
-                return lambda realf: f(realf, *args, **kwargs)
-        return decorator
-
-    @double_decorator
-    def update(func, load=True, save=True):
-        def decorator(*func_args, **func_kwargs):
-            if load:
-                print("load")
-            result = func(*func_args, **func_kwargs)
-            if save:
-                print("save")
-            return result
-        return decorator
         
     def __repr__(self):
         attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.get_saveable_attrs()]
@@ -91,7 +70,83 @@ class Saveable(Data):
             with open(self._path, "r") as f:
                 Data.import_data(json.load(f), self)
 
-    
+    def double_decorator(func: callable):
+        """A decorator decorator that is used to allow the decorator to be used as:
+
+            .. code-block:: python3
+                @decorator(...)
+                #or
+                @decorator
+        
+        Parameters
+        ----------
+            func: callable
+                The function decorator
+        
+        Example
+        -------
+
+            .. code-block:: python3
+
+            @double_decorator
+            def dec_name(func: callable, a: int, b: int = 10):
+                def decorator(*func_args, **func_kwargs):
+                    ...
+                    result = func(*func_args, **func_kwargs)
+                    ...
+                    return result
+                return decorator
+
+        """
+
+        def decorator(*args, **kwargs):
+            if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
+                # called as @decorator
+                return func(args[0])
+            else:
+                # called as @decorator(...)
+                return lambda realf: func(realf, *args, **kwargs)
+        return decorator
+
+    @double_decorator
+    def update(func: callable, load: bool = True, save: bool = True):
+        """Update decorator that is used to automatically load and save the class
+
+        Parameters
+        ----------
+            func: callable
+                The function decorated, don't need to be filled
+            load: Optional[bool]
+                Enable loading
+            save: Optional[bool]
+                Enable saving
+        
+        Example
+        -------
+
+            .. code-block:: python3
+
+            @Saveable.update
+            def add_xp(self, amount: int):
+                self.xp += amount
+            
+            @Saveable.update(load=False)
+            def add_level(self, amount: int):
+                self.level += amount
+        """
+
+        def decorator(*func_args, **func_kwargs):
+            clazz = func_args[0]
+            if load:
+                clazz.load()
+
+            result = func(*func_args, **func_kwargs)
+            
+            if save:
+                clazz.save()
+            return result
+        return decorator
+
     def create_needed_dirs(self):
         dirname = os.path.dirname(self._path)
         if not os.path.exists(dirname):
