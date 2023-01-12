@@ -22,7 +22,7 @@ class Data:
 
         return data
     
-
+    @staticmethod
     def import_data(data: dict, clazz):
         if not isinstance(data, dict):
             return
@@ -44,6 +44,27 @@ class Data:
             
             else:
                 setattr(clazz, attr_name, attr_data)
+    
+    def double_decorator(f):
+        def decorator(*args, **kwargs):
+            if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
+                # called @decorator
+                return f(args[0])
+            else:
+                # called @decorator(...)
+                return lambda realf: f(realf, *args, **kwargs)
+        return decorator
+
+    @double_decorator
+    def update(func, load=True, save=True):
+        def decorator(*func_args, **func_kwargs):
+            if load:
+                print("load")
+            result = func(*func_args, **func_kwargs)
+            if save:
+                print("save")
+            return result
+        return decorator
         
     def __repr__(self):
         attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.get_saveable_attrs()]

@@ -14,8 +14,10 @@ class Inventory(Data):
         self.items = []
         self._items_element_type = Item
     
+    @Data.update
     def add_item(self, item: Item):
-        self.items.append(item)
+        # self.items.append(item)
+        print("sqsd")
 
 class MemberData(Saveable):
     def __init__(self, member_id):
@@ -27,7 +29,5 @@ class MemberData(Saveable):
     
 
 member_data = MemberData(1)
-member_data.load()
-apple = Item("Book", description="A wonderful book")
-member_data.inventory.add_item(apple)
-member_data.save()
+item = Item("Book", description="A wonderful book")
+member_data.inventory.add_item(item)
