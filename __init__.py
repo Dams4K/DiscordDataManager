@@ -1,1 +1,1 @@
-from primary_class import *
+from management import *
