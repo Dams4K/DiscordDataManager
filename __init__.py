@@ -1,1 +1,1 @@
-from management import *
+from .management import *
