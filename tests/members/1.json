@@ -1,22 +1,20 @@
 {
     "__type": "MemberData",
     "level": 0,
-    "xp": 50,
+    "xp": 0,
     "inventory": {
         "__type": "Inventory",
-        "items": [
-            {
-                "__type": "Item",
-                "name": "Apple",
-                "description": "no description",
-                "price": 0
-            },
-            {
-                "__type": "Item",
-                "name": "Book",
-                "description": "A wonderful book",
-                "price": 0
-            }
-        ]
+        "items": []
+    },
+    "numbers": [
+        1,
+        2,
+        30,
+        4
+    ],
+    "dict": {
+        "a": 0,
+        "b": 1,
+        "20": "c"
     }
 }

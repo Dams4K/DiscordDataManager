@@ -23,9 +23,19 @@ class Data:
         return data
     
     @staticmethod
-    def import_data(data: dict, clazz):
+    def import_data(data, clazz):
+        """A static function used to import data
+        
+        Parameters
+        ----------
+            data: dict
+                Data to import into the class
+
+            clazz: object
+                An instance of the class
+        """
         if not isinstance(data, dict):
-            return
+            return data
 
         for attr_name, attr_data in data.items():
             if attr_name == "__type": continue
@@ -35,15 +45,16 @@ class Data:
                 Data.import_data(attr_data, class_attr)
 
             elif isinstance(attr_data, list):
+                final_list = []
                 for element_data in attr_data:
-                    if isinstance(element_data, dict) and element_data.get("__type", None):
-                        element_clazz = getattr(clazz, f"_{attr_name}_element_type")()
-                        Data.import_data(element_data, element_clazz)
-                        
-                        class_attr.append(element_clazz)
+                    element_clazz = getattr(clazz, f"_{attr_name}_element_type", None)
+                    final_list.append(Data.import_data(element_data, element_clazz))
+                setattr(clazz, attr_name, final_list)
             
             else:
                 setattr(clazz, attr_name, attr_data)
+        
+        return clazz
         
     def __repr__(self):
         attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.get_saveable_attrs()]

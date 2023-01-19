@@ -12,8 +12,9 @@ class Inventory(Data):
     def __init__(self):
         super().__init__()
         self.items = []
-        self._items_element_type = Item
+        self._items_element_type = Item()
     
+
     def add_item(self, item: Item):
         self.items.append(item)
 
@@ -24,6 +25,8 @@ class MemberData(Saveable):
         self.level = 0
         self.xp = 0
         self.inventory = Inventory()
+        self.numbers = [1, 2, 3, 4]
+        self.dict = {"a": 0, "b": 1, 2: "c"}
     
 
     @Saveable.update()
@@ -32,6 +35,9 @@ class MemberData(Saveable):
     
 
 member_data = MemberData(1)
-member_data.add_xp(10)
-# item = Item("Book", description="A wonderful book")
+member_data.load()
+print(member_data.inventory)
+print(member_data.numbers)
+print(member_data.dict)
+# member_data.add_xp(10)
 # member_data.inventory.add_item(item)
