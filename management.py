@@ -66,9 +66,11 @@ class Data:
 
 
 class Saveable(Data):
-    def __init__(self, path):
+    def __init__(self, path, load_at_init = True):
         super().__init__()
         self._path = path
+        if load_at_init:
+            self.load()
 
     def save(self):
         self.create_needed_dirs()
