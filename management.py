@@ -47,7 +47,7 @@ class Data:
             elif isinstance(attr_data, list):
                 final_list = []
                 for element_data in attr_data:
-                    element_clazz = getattr(clazz, f"_{attr_name}_element_type", None)
+                    element_clazz = getattr(clazz, f"_{attr_name}_type", None)
                     final_list.append(Data.import_data(element_data, element_clazz))
                 setattr(clazz, attr_name, final_list)
             
