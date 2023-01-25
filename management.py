@@ -74,19 +74,37 @@ class Saveable(Data):
     def __init__(self, path, load_at_init = True):
         super().__init__()
         self._path = path
+        self._tmp_backup_path = path + "_tmp_backup"
         if load_at_init:
             self.load()
 
-    def save(self):
+    def create_needed_dirs(self):
+        dirname = os.path.dirname(self._path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
+    def save(self, tmp_backup=True):
         self.create_needed_dirs()
+        
+        if os.path.exists(self._path):
+            os.rename(self._path, self._tmp_backup_path)
+
         with open(self._path, "w") as f:
             json.dump(self.export_data(), f, indent=4)
+        
+        if os.path.exists(self._tmp_backup_path):
+            os.remove(self._tmp_backup_path)
 
     def load(self):
         self.create_needed_dirs()
         if os.path.exists(self._path):
-            with open(self._path, "r") as f:
-                Data.import_data(json.load(f), self)
+            try:
+                with open(self._path, "r") as f:
+                    Data.import_data(json.load(f), self)
+            except json.decoder.JSONDecodeError:
+                if os.path.exists(self._tmp_backup_path):
+                    os.rename(self._tmp_backup_path, self._path)
+                    self.load()
 
     def double_decorator(func: callable):
         """A decorator decorator that is used to allow the decorator to be used as:
@@ -164,8 +182,3 @@ class Saveable(Data):
                 clazz.save()
             return result
         return decorator
-
-    def create_needed_dirs(self):
-        dirname = os.path.dirname(self._path)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
