@@ -66,10 +66,10 @@ class Data:
 
 
 class Saveable(Data):
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(Saveable, cls).__new__(cls)
-        return cls.instance
+    def __new__(cls, id, *args, **kwargs):
+        if not hasattr(cls, f"instance_{id}"):
+            setattr(cls, f"instance_{id}", super(Saveable, cls).__new__(cls))
+        return getattr(cls, f"instance_{id}")
 
     def __init__(self, path, load_at_init = True):
         super().__init__()
