@@ -1,10 +1,6 @@
 import os
 import json
 
-
-#TODO: create a cache system to store already instanced class
-# may counter 2 writing of a same file causing a overwriting and lose of information
-
 class Data:
     def export_data(self):
         data = {"__type": self.__class__.__name__}
@@ -70,6 +66,11 @@ class Data:
 
 
 class Saveable(Data):
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(Saveable, cls).__new__(cls)
+        return cls.instance
+
     def __init__(self, path, load_at_init = True):
         super().__init__()
         self._path = path
