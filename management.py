@@ -1,6 +1,7 @@
 import os
 import json
 
+
 #TODO: create a cache system to store already instanced class
 # may counter 2 writing of a same file causing a overwriting and lose of information
 
