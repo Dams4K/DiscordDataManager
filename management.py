@@ -92,7 +92,7 @@ class Saveable(Data):
         with open(self._path, "w") as f:
             json.dump(self.export_data(), f, indent=4)
         
-        if os.path.exists(self._tmp_backup_path):
+        if os.path.exists(self._tmp_backup_path) and os.path.exists(self._path):
             os.remove(self._tmp_backup_path)
 
     def load(self):
