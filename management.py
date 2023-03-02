@@ -3,6 +3,12 @@ import json
 
 class Data:
     def export_data(self):
+        """A method used to export a class that inherite of Data, all its attributs
+
+        Returns
+        -------
+            dict
+        """
         data = {"__type": self.__class__.__name__}
         for attr_name in self.get_saveable_attrs():
             attr = getattr(self, attr_name)
