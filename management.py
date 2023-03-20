@@ -45,6 +45,8 @@ class Data:
 
         for attr_name, attr_data in data.items():
             if attr_name == "__type": continue
+            if not hasattr(clazz, attr_name): continue
+            
             class_attr = getattr(clazz, attr_name)
 
             if isinstance(attr_data, dict) and class_attr.__class__.__name__ == attr_data.get("__type", None):
