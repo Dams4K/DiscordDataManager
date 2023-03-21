@@ -115,6 +115,10 @@ class Saveable(Data):
                     os.rename(self._tmp_backup_path, self._path)
                     self.load()
 
+    def delete(self):
+        if os.path.exists(self._path):
+            os.remove(self._path)
+
     def double_decorator(func: callable):
         """A decorator decorator that is used to allow the decorator to be used as:
 
