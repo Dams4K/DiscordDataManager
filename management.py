@@ -14,16 +14,27 @@ class Data:
             attr = getattr(self, attr_name)
             if isinstance(attr, Data):
                 attr = attr.export_data()
+
             elif isinstance(attr, list):
-                attr_list = []
+                fina_list = []
                 for i in range(len(attr)):
                     attr_element = attr[i]
                     if isinstance(attr_element, Data):
                         attr_element = attr_element.export_data()
                     
-                    attr_list.append(attr_element)
-                attr = attr_list
+                    fina_list.append(attr_element)
+                attr = fina_list
             
+            elif isinstance(attr, dict):
+                final_dict = {}
+                for sub_attr_key, sub_attr_value in attr.items():
+                    if isinstance(sub_attr_value, Data):
+                        sub_attr_value = sub_attr_value.export_data()
+                    
+                    final_dict[sub_attr_key] = sub_attr_value
+                attr = final_dict
+            
+
             data[attr_name] = attr
 
         return data
@@ -59,6 +70,13 @@ class Data:
                     final_list.append(Data.import_data(element_data, element_clazz))
                 setattr(clazz, attr_name, final_list)
             
+            elif isinstance(attr_data, dict):
+                final_dict = {}
+                for key, value in attr_data.items():
+                    value_clazz = getattr(clazz, f"_{attr_name}_type", None)
+                    final_dict[key] = Data.import_data(value, value_clazz)
+                setattr(clazz, attr_name, final_dict)
+
             else:
                 setattr(clazz, attr_name, attr_data)
         
