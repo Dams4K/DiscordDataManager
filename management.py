@@ -133,8 +133,12 @@ class Saveable(Data):
                     os.rename(self._tmp_backup_path, self._path)
                     self.load()
 
+    @property
+    def file_exist(self):
+        return os.path.exists(self._path)
+
     def delete(self):
-        if os.path.exists(self._path):
+        if self.file_exist:
             os.remove(self._path)
 
     def double_decorator(func: callable):
