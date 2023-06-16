@@ -2,6 +2,8 @@ import os
 import json
 
 class Data:
+    _dversion = 1
+
     def export_data(self):
         """A method used to export a class that inherite of Data, all its attributs
 
@@ -9,7 +11,7 @@ class Data:
         -------
             dict
         """
-        data = {"__type": self.__class__.__name__}
+        data = {"__type": self.__class__.__name__, "__dversion": self._dversion}
         for attr_name in self.get_saveable_attrs():
             attr = getattr(self, attr_name)
             if isinstance(attr, Data):
@@ -51,9 +53,10 @@ class Data:
             clazz: object
                 An instance of the class
         """
-        if not isinstance(data, dict):
+        if not isinstance(clazz, Data):
             return data
 
+        data = clazz.convert_version(data)
         for attr_name, attr_data in data.items():
             if attr_name == "__type": continue
             if not hasattr(clazz, attr_name): continue
@@ -61,9 +64,14 @@ class Data:
             class_attr = getattr(clazz, attr_name)
 
             if isinstance(attr_data, dict) and class_attr.__class__.__name__ == attr_data.get("__type", None):
+                # Dict is an exported Data class
                 Data.import_data(attr_data, class_attr)
 
             elif isinstance(attr_data, list):
+                if not isinstance(class_attr, list):
+                    print(f"Unable load '{attr_name}' attribue, format differs between data file and class. The data attribute should be {type(class_attr)} but is {type(attr_data)}")
+                    continue
+
                 final_list = []
                 for element_data in attr_data:
                     element_clazz = getattr(clazz, f"_{attr_name}_type", None)
@@ -71,6 +79,10 @@ class Data:
                 setattr(clazz, attr_name, final_list)
             
             elif isinstance(attr_data, dict):
+                if not isinstance(class_attr, dict):
+                    print(f"Unable load '{attr_name}' attribue, format differs between data file and class. The data attribute should be {type(class_attr)} but is {type(attr_data)}")
+                    continue
+                # Python dict
                 final_dict = {}
                 for key, value in attr_data.items():
                     value_clazz = getattr(clazz, f"_{attr_name}_type", None)
@@ -81,7 +93,21 @@ class Data:
                 setattr(clazz, attr_name, attr_data)
         
         return clazz
+    
+    @staticmethod
+    def convert_version(data):
+        """Convert old version dataset to the new version dataset
         
+        Parameters
+        ----------
+            data: list | dict
+
+        Returns
+        -------
+            list | dict
+        """
+        return data
+
     def __repr__(self):
         attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.get_saveable_attrs()]
         inner = ' '.join("%s=%r" % t for t in attrs)
