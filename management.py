@@ -74,15 +74,16 @@ class Data:
                 setattr(clazz, attr_name, final_list)
             
             elif isinstance(attr_data, dict):
-                if not isinstance(class_attr, dict):
-                    print(f"Unable load '{attr_name}' attribue, format differs between data file and class. The data attribute should be {type(class_attr)} but is {type(attr_data)}")
-                    continue
-                # Python dict
-                final_dict = {}
-                for key, value in attr_data.items():
-                    value_clazz = getattr(clazz, f"_{attr_name}_type", None)
-                    final_dict[key] = Data.import_data(value, value_clazz)
-                setattr(clazz, attr_name, final_dict)
+                if isinstance(class_attr, Data):
+                    # attr_data is an exported class
+                    setattr(clazz, attr_name, Data.import_data(attr_data, class_attr))
+                else:
+                    # Normal python dict
+                    final_dict = {}
+                    for key, value in attr_data.items():
+                        value_clazz = getattr(clazz, f"_{attr_name}_type", None)
+                        final_dict[key] = Data.import_data(value, value_clazz)
+                    setattr(clazz, attr_name, final_dict)
 
             else:
                 setattr(clazz, attr_name, attr_data)
