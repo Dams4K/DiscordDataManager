@@ -11,7 +11,7 @@ class Data:
         -------
             dict
         """
-        data = {"__type": self.__class__.__name__, "__dversion": self._dversion}
+        data = {"__dversion": self._dversion}
         for attr_name in self.get_saveable_attrs():
             attr = getattr(self, attr_name)
             if isinstance(attr, Data):
@@ -58,16 +58,11 @@ class Data:
 
         data = clazz.convert_version(data)
         for attr_name, attr_data in data.items():
-            if attr_name == "__type": continue
             if not hasattr(clazz, attr_name): continue
             
             class_attr = getattr(clazz, attr_name)
 
-            if isinstance(attr_data, dict) and class_attr.__class__.__name__ == attr_data.get("__type", None):
-                # Dict is an exported Data class
-                Data.import_data(attr_data, class_attr)
-
-            elif isinstance(attr_data, list):
+            if isinstance(attr_data, list):
                 if not isinstance(class_attr, list):
                     print(f"Unable load '{attr_name}' attribue, format differs between data file and class. The data attribute should be {type(class_attr)} but is {type(attr_data)}")
                     continue
