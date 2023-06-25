@@ -228,14 +228,27 @@ class Saveable(Data):
                 self.level += amount
         """
 
-        def decorator(*func_args, **func_kwargs):
-            clazz = func_args[0]
-            if load:
-                clazz.load()
+        if inspect.iscoroutinefunction(func):
+            async def decorator(*func_args, **func_kwargs):
+                clazz = func_args[0]
+                if load:
+                    clazz.load()
 
-            result = func(*func_args, **func_kwargs)
+                result = await func(*func_args, **func_kwargs)
+                
+                if save:
+                    clazz.save()
+                return result
+        else:
+            def decorator(*func_args, **func_kwargs):
+                clazz = func_args[0]
+                if load:
+                    clazz.load()
+
+                result = func(*func_args, **func_kwargs)
+                
+                if save:
+                    clazz.save()
+                return result
             
-            if save:
-                clazz.save()
-            return result
         return decorator
