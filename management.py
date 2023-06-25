@@ -19,14 +19,14 @@ class Data:
                 attr = attr.export_data()
 
             elif isinstance(attr, list):
-                fina_list = []
+                final_list = []
                 for i in range(len(attr)):
                     attr_element = attr[i]
                     if isinstance(attr_element, Data):
                         attr_element = attr_element.export_data()
                     
-                    fina_list.append(attr_element)
-                attr = fina_list
+                    final_list.append(attr_element)
+                attr = final_list
             
             elif isinstance(attr, dict):
                 final_dict = {}
