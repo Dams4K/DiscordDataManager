@@ -1,9 +1,13 @@
-import os
-import json
 import inspect
+import json
+import os
 
-class Data:
-    _dversion = 1
+
+class Data():
+    __slots__ = ("_dversion",)
+
+    def __init__(self) -> None:
+        self._dversion = 1 # Default version
 
     def export_data(self):
         """A method used to export a class that inherite of Data, all its attributs
@@ -111,10 +115,17 @@ class Data:
         return f'<{self.__class__.__name__} {inner}>'
     
     def get_saveable_attrs(self):
-        return [attr for attr in self.__dict__ if not attr.startswith("_")]
+        attrs = []
+        if not getattr(self, "__slots__", None) is None:
+            attrs.extend([attr for attr in self.__slots__ if not attr.startswith("_")])
+        if not getattr(self, "__dict__", None) is None:
+            attrs.extend([attr for attr in self.__dict__ if not attr.startswith("_")])
+        return attrs
 
 
 class Saveable(Data):
+    __slots__ = ("_path", "_tmp_backup_path")
+
     def __new__(cls, *args, **kwargs):
         inst_id = "-".join([str(arg) for arg in args])
         if not hasattr(cls, f"instance_{inst_id}"):
