@@ -4,10 +4,8 @@ import os
 
 
 class Data():
-    __slots__ = ("_dversion",)
-
-    def __init__(self) -> None:
-        self._dversion = 1 # Default version
+    __slots__ = ()
+    _dversion = 1
 
     def export_data(self):
         """A method used to export a class that inherite of Data, all its attributs
