@@ -151,7 +151,6 @@ class Saveable(Data):
             os.rename(self._path, self._tmp_backup_path)
 
         with open(self._path, "w") as f:
-            print(self._path, self.export_data())
             json.dump(self.export_data(), f, indent=4)
         
         if os.path.exists(self._tmp_backup_path) and os.path.exists(self._path):
