@@ -1,7 +1,7 @@
 import inspect
 import json
 import os
-
+from itertools import chain
 
 class Data():
     __slots__ = ()
@@ -115,9 +115,11 @@ class Data():
     def get_saveable_attrs(self):
         attrs = []
         if not getattr(self, "__slots__", None) is None:
-            attrs.extend([attr for attr in self.__slots__ if not attr.startswith("_")])
+            slots = chain.from_iterable(getattr(cls, '__slots__', []) for cls in self.__class__.__mro__)
+            attrs.extend([attr for attr in slots if not attr.startswith("_")])
         if not getattr(self, "__dict__", None) is None:
             attrs.extend([attr for attr in self.__dict__ if not attr.startswith("_")])
+        
         return attrs
 
 
@@ -149,6 +151,7 @@ class Saveable(Data):
             os.rename(self._path, self._tmp_backup_path)
 
         with open(self._path, "w") as f:
+            print(self._path, self.export_data())
             json.dump(self.export_data(), f, indent=4)
         
         if os.path.exists(self._tmp_backup_path) and os.path.exists(self._path):
