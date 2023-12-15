@@ -6,6 +6,7 @@ from itertools import chain
 class Data():
     __slots__ = ()
     _dversion = 1
+    BYPASS_UNKNOWN_VARIABLES = False
 
     def export_data(self):
         """A method used to export a class that inherite of Data, all its attributs
@@ -61,7 +62,11 @@ class Data():
 
         data = clazz.convert_version(data)
         for attr_name, attr_data in data.items():
-            if not hasattr(clazz, attr_name): continue
+            if not hasattr(clazz, attr_name):
+                if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False):
+                    setattr(clazz, attr_name, None)
+                else:
+                    continue
             
             class_attr = getattr(clazz, attr_name)
 
