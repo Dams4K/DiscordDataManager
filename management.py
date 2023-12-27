@@ -5,7 +5,7 @@ from itertools import chain
 
 class Data():
     __slots__ = ()
-    _dversion = 1
+    __dversion = 1
     BYPASS_UNKNOWN_VARIABLES = False
 
     def export_data(self):
@@ -15,7 +15,7 @@ class Data():
         -------
             dict
         """
-        data = {"__dversion": self._dversion}
+        data = {"__dversion": self.__dversion}
         for attr_name in self.get_saveable_attrs():
             attr = getattr(self, attr_name)
             if isinstance(attr, Data):
