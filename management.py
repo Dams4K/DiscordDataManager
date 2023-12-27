@@ -65,9 +65,10 @@ class Data():
         data = clazz.convert_version(data)
         dv1 = data.get("__dversion", 1)
 
+        setattr(clazz, "__dversion", dv1)
         for attr_name, attr_data in data.items():
             if not hasattr(clazz, attr_name):
-                if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False) or attr_name == "__dversion":
+                if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False):
                     setattr(clazz, attr_name, None)
                 else:
                     continue
