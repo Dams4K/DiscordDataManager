@@ -125,7 +125,7 @@ class Data():
         return f'<{self.__class__.__name__} {inner}>'
     
     def get_saveable_attrs(self):
-        attrs = ["__dversion"]
+        attrs = []
         if not getattr(self, "__slots__", None) is None:
             slots = chain.from_iterable(getattr(cls, '__slots__', []) for cls in self.__class__.__mro__)
             attrs.extend([attr for attr in slots if not attr.startswith("_")])
