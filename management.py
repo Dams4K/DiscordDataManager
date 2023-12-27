@@ -60,7 +60,10 @@ class Data():
         if not isinstance(clazz, Data):
             return data
 
+        dv0 = data.get("__dversion", 1)
         data = clazz.convert_version(data)
+        dv1 = data.get("__dversion", 1)
+
         for attr_name, attr_data in data.items():
             if not hasattr(clazz, attr_name):
                 if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False):
@@ -96,6 +99,9 @@ class Data():
             else:
                 setattr(clazz, attr_name, attr_data)
         
+        if isinstance(clazz, Saveable) and dv0 != dv1:
+            clazz.save()
+
         return clazz
     
     @staticmethod
