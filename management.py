@@ -3,6 +3,7 @@ import json
 import os
 from itertools import chain
 
+
 class Data():
     __slots__ = ()
     __dversion = 1
@@ -66,7 +67,7 @@ class Data():
 
         for attr_name, attr_data in data.items():
             if not hasattr(clazz, attr_name):
-                if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False):
+                if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False) or attr_name == "__dversion":
                     setattr(clazz, attr_name, None)
                 else:
                     continue
