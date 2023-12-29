@@ -123,22 +123,24 @@ class Classe2Save(Saveable):
 ```
 So there is this method in the class `Saveable`. All it does, is returning the arg `data`. This method is called when the data is loaded as a dict by json, just before it's used to load the class with the correct values.
 
-So by overriding the method `convert_version` you can convert data from an old class to a new class. Every class that inherit from `Data` (the parent of `Saveable`) has the variable `__dversion`. By default it's set a 1 and i always saved into the json file. So by using it, you can detect if you are loading an outdated file:
+So by overriding the method `convert_version` you can convert data from an old class to a new class. Every class that inherit from `Data` (the parent of `Saveable`) has the variable `__dversion`. By default it's set to `1` and it's always saved into the json file. So by using it, you can detect if you are loading an outdated file:
 
 ```python
 class Class2Save(Saveable):
-    __dversion = 2
+    dversion = 2
+    
     ...
 
     @staticmethod
     def convert_version(data: dict) -> dict:
-        if data.get("__dversion") == 1:
-            data["__dversion"] = 2
-            data["a"] = str(data["a"]) # Now variable a will be a string
+        if data.get("__dversion") == 1: # yes, there is "__"
+            data["a"] = str(data["a"]) # Now variable "a" will be a string
         
         return data
 ```
 
 ## Hey you dumbass, what if i stop the program when it's saving a class?
 
-OH NO, MY ONLY WEAKNESS
+OH NO, MY ONLY WEAKNESS.
+
+Before every save, the existing file is renamed to something else. If the program stop working while saving, json can't load the file, an error appear and the code replace the corrupted file by the rename one. Hipidi hopidi
