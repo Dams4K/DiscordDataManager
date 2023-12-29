@@ -6,7 +6,7 @@ from itertools import chain
 
 class Data():
     __slots__ = ()
-    __dversion = 1
+    dversion = 1
     BYPASS_UNKNOWN_VARIABLES = False
 
     def export_data(self):
@@ -16,7 +16,7 @@ class Data():
         -------
             dict
         """
-        data = {"__dversion": self.__dversion}
+        data = {"__dversion": self.dversion}
         for attr_name in self.get_saveable_attrs():
             attr = getattr(self, attr_name)
             if isinstance(attr, Data):
@@ -57,15 +57,15 @@ class Data():
 
             clazz: object
                 An instance of the class
+        
+        Returns
+        -------
+            clazz | None
         """
         if not isinstance(clazz, Data):
-            return data
+            return None
 
-        dv0 = data.get("__dversion", 1)
         data = clazz.convert_version(data)
-        dv1 = data.get("__dversion", 1)
-
-        clazz.__class__.__dversion = dv1
         for attr_name, attr_data in data.items():
             if not hasattr(clazz, attr_name):
                 if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False):
@@ -101,7 +101,7 @@ class Data():
             else:
                 setattr(clazz, attr_name, attr_data)
         
-        if isinstance(clazz, Saveable) and dv0 != dv1:
+        if isinstance(clazz, Saveable) and clazz.__class__.dversion != data.get("__dversion"):
             clazz.save()
 
         return clazz
