@@ -181,7 +181,7 @@ class Saveable(Data):
         if os.path.exists(self._path):
             try:
                 with open(self._path, "r") as f:
-                    Data.import_data(json.load(f), self)
+                    Saveable.import_data(json.load(f), self)
             except json.decoder.JSONDecodeError:
                 if os.path.exists(self._tmp_backup_path):
                     os.rename(self._tmp_backup_path, self._path)
