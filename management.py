@@ -100,9 +100,6 @@ class Data():
 
             else:
                 setattr(clazz, attr_name, attr_data)
-        
-        if isinstance(clazz, Saveable) and clazz.__class__.dversion != data.get("__dversion"):
-            clazz.save()
 
         return clazz
     
@@ -151,6 +148,16 @@ class Saveable(Data):
         self._tmp_backup_path = path + "_tmp_backup"
         if load_at_init:
             self.load()
+
+    @staticmethod
+    def import_data(data, clazz):
+        clazz = Data.import_data(data, clazz)
+
+        if clazz.__class__.dversion != data.get("__dversion"):
+            clazz.save()
+
+        return clazz
+
 
     def create_needed_dirs(self):
         dirname = os.path.dirname(self._path)
