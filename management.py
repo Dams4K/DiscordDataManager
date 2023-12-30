@@ -62,7 +62,7 @@ class Data():
         
         Returns
         -------
-            clazz | None
+            clazz (loaded) | data
         """
         if not isinstance(clazz, Data):
             return data # ok so, i need to return this because i do something weird forcing me to return data hahaa
