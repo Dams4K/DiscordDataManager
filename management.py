@@ -1,11 +1,13 @@
 import inspect
 import json
 import os
+import weakref
+
 from itertools import chain
 
 
 class Data():
-    __slots__ = ()
+    __slots__ = ("__weakref__",)
     dversion = 1
     BYPASS_UNKNOWN_VARIABLES = False
 
@@ -63,7 +65,7 @@ class Data():
             clazz | None
         """
         if not isinstance(clazz, Data):
-            return None
+            return data # ok so, i need to return this because i do something weird forcing me to return data hahaa
 
         data = clazz.convert_version(data)
         for attr_name, attr_data in data.items():
@@ -135,12 +137,18 @@ class Data():
 
 class Saveable(Data):
     __slots__ = ("_path", "_tmp_backup_path")
+    instances = {}
 
     def __new__(cls, *args, **kwargs):
         inst_id = "-".join([str(arg) for arg in args])
-        if not hasattr(cls, f"instance_{inst_id}"):
-            setattr(cls, f"instance_{inst_id}", super(Saveable, cls).__new__(cls))
-        return getattr(cls, f"instance_{inst_id}")
+        cls.instances = {}
+        weak_inst = cls.instances.get(inst_id)
+        
+        if weak_inst is None or weak_inst() is None:
+            inst = super(Saveable, cls).__new__(cls)
+            weak_inst = weakref.ref(inst)
+            cls.instances[inst_id] = weak_inst
+        return weak_inst()
 
     def __init__(self, path, load_at_init = True):
         super().__init__()
