@@ -136,16 +136,17 @@ class Data():
 
 
 class Saveable(Data):
-    __slots__ = ("_path", "_tmp_backup_path")
+    __slots__ = ("_path", "_tmp_backup_path", "inst_id")
     instances = {}
 
     def __new__(cls, *args, **kwargs):
         inst_id = "-".join([str(arg) for arg in args])
-        cls.instances = {}
+        if not cls.instances: # Temp solution
+            cls.instances = {}
         weak_inst = cls.instances.get(inst_id)
-        
         if weak_inst is None or weak_inst() is None:
             inst = super(Saveable, cls).__new__(cls)
+            inst.inst_id = inst_id
             weak_inst = weakref.ref(inst)
             cls.instances[inst_id] = weak_inst
         return weak_inst()
@@ -156,6 +157,9 @@ class Saveable(Data):
         self._tmp_backup_path = path + "_tmp_backup"
         if load_at_init:
             self.load()
+
+    def __del__(self):
+        self.__class__.instances.pop(self.inst_id)
 
     @staticmethod
     def import_data(data, clazz):
