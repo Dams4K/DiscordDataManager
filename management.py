@@ -65,17 +65,17 @@ class Data():
             clazz (loaded) | data
         """
         if not isinstance(clazz, Data):
-            return data # ok so, i need to return this because i do something weird forcing me to return data hahaa
+            return data # Nothing to import, python built-in objetcs
 
         data = clazz.convert_version(data)
         for attr_name, attr_data in data.items():
-            if not hasattr(clazz, attr_name):
-                if getattr(clazz, "BYPASS_UNKNOWN_VARIABLES", False):
-                    setattr(clazz, attr_name, None)
-                else:
-                    continue
+            if attr_name == "__dversion": # This must not be loaded
+                continue
             
-            class_attr = getattr(clazz, attr_name)
+            if not hasattr(clazz, attr_name) and not clazz.BYPASS_UNKNOWN_VARIABLES:
+                continue
+            
+            class_attr = getattr(clazz, attr_name, None)
 
             if isinstance(attr_data, list):
                 if not isinstance(class_attr, list):
@@ -84,8 +84,9 @@ class Data():
 
                 final_list = []
                 for element_data in attr_data:
-                    element_clazz = getattr(clazz, f"_{attr_name}_type", None)
+                    element_clazz = getattr(clazz, f"_{attr_name}_type", None) # if there is no type specified, we guess it's python built-in objetcs
                     final_list.append(Data.import_data(element_data, element_clazz))
+                
                 setattr(clazz, attr_name, final_list)
             
             elif isinstance(attr_data, dict):
@@ -100,7 +101,7 @@ class Data():
                         final_dict[key] = Data.import_data(value, value_clazz)
                     setattr(clazz, attr_name, final_dict)
 
-            else:
+            else: # neither a list nor a dict
                 setattr(clazz, attr_name, attr_data)
 
         return clazz
@@ -119,11 +120,6 @@ class Data():
         """
         return data
 
-    def __repr__(self):
-        attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.get_saveable_attrs()]
-        inner = ' '.join("%s=%r" % t for t in attrs)
-        return f'<{self.__class__.__name__} {inner}>'
-    
     def get_saveable_attrs(self):
         attrs = []
         if not getattr(self, "__slots__", None) is None:
@@ -134,6 +130,11 @@ class Data():
         
         return attrs
 
+
+    def __repr__(self):
+        attrs = [(attr_name, getattr(self, attr_name)) for attr_name in self.get_saveable_attrs()]
+        inner = ' '.join("%s=%r" % t for t in attrs)
+        return f'<{self.__class__.__name__} {inner}>'
 
 class Saveable(Data):
     __slots__ = ("_path", "_tmp_backup_path", "inst_id")
