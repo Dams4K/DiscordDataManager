@@ -160,7 +160,7 @@ class Saveable(Data):
             self.load()
 
     def __del__(self):
-        self.__class__.instances.pop(self.inst_id)
+        self.__class__.instances.pop(self._inst_id)
 
     @staticmethod
     def import_data(data, clazz):
