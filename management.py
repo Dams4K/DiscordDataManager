@@ -137,19 +137,19 @@ class Data():
         return f'<{self.__class__.__name__} {inner}>'
 
 class Saveable(Data):
-    __slots__ = ("_path", "_tmp_backup_path", "inst_id")
+    __slots__ = ("_path", "_tmp_backup_path", "_inst_id")
     instances = {}
 
     def __new__(cls, *args, **kwargs):
-        inst_id = "-".join([str(arg) for arg in args])
-        if not cls.instances: # Temp solution
+        _inst_id = "-".join([str(arg) for arg in args])
+        if not cls.instances: # Temporary solution but for a looong time
             cls.instances = {}
-        weak_inst = cls.instances.get(inst_id)
+        weak_inst = cls.instances.get(_inst_id)
         if weak_inst is None or weak_inst() is None:
             inst = super(Saveable, cls).__new__(cls)
-            inst.inst_id = inst_id
+            inst._inst_id = _inst_id
             weak_inst = weakref.ref(inst)
-            cls.instances[inst_id] = weak_inst
+            cls.instances[_inst_id] = weak_inst
         return weak_inst()
 
     def __init__(self, path, load_at_init = True):
